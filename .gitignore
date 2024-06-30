@@ -1,5 +1,5 @@
 trash
 venv
 *.env
-*.txt
+*logs.txt
 *conf.json
