@@ -58,6 +58,7 @@ def request(method, url, **kw):
     """リクエスト実行関数"""
     res = method(url, **kw)
     res_data = res.json()
+    # pprint(res_data)  # レスポンスを表示
     if is_expired(res_data):
         refresh()
         kw["headers"] = bearer_header()
