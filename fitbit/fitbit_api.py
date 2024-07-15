@@ -1,6 +1,14 @@
 from datetime import datetime, timedelta
 from auth.auth import session, request, bearer_header
 
+# Note: This function is not used in the main.py file
+def get_sleep_log_by_date(date="today"):
+    """指定日の睡眠ログを取得"""
+    url = f"https://api.fitbit.com/1.2/user/-/sleep/date/{date}.json"
+    headers = bearer_header()
+    res = request(session.get, url, headers=headers)
+    return res
+
 def get_sleep_log_list(after_date=None, before_date=None, sort="asc", limit=100, offset=0):
     """
     Fitbit APIから睡眠ログリストを取得する
