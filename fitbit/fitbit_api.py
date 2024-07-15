@@ -40,7 +40,7 @@ def get_sleep_log_list(after_date=None, before_date=None, sort="asc", limit=100,
 def check_for_sleep(date=None):
     """指定日の睡眠ログをチェックし、睡眠の開始・終了をアラート表示およびDiscord通知"""
     print(f"Checking for sleep on {date}")
-    res = get_sleep_log_list(after_date=date, before_date=(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=-1)).strftime("%Y-%m-%d"))
+    res = get_sleep_log_list(after_date=(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=-1)).strftime("%Y-%m-%d"))
     data = res.json()
     print(data)
     new_logs = []
