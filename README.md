@@ -12,6 +12,17 @@
 - Get Sleep Log by Date Range: 指定した期間の睡眠ログエントリを取得します。
 - Get Sleep Log List: 指定した日付前後の睡眠ログエントリのリストを取得します。
 
+## Directory Structure
+
+- `auth/`: Contains authentication related functions.
+- `fitbit/`: Contains functions to interact with the Fitbit API.
+- `discord/`: Contains functions to send messages to Discord.
+- `file_operations/`: Contains functions to handle file operations.
+- `config/`: Contains configuration files.
+- `main.py`: Main entry point of the application.
+- `.env`: Environment variables.
+- `requirements.txt`: Python dependencies.
+
 ## de
 
 認証情報の読み込み:
