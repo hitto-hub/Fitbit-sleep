@@ -1,6 +1,8 @@
 import os
 from requests import Session
+from dotenv import load_dotenv
 
+load_dotenv()
 session = Session()
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
