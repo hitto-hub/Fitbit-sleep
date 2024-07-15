@@ -20,6 +20,7 @@ def get_sleep_log_list(after_date=None, before_date=None, sort="asc", limit=100,
     :param offset: オフセット
     :return: 睡眠ログのリスト
     """
+    print(f"Getting sleep logs from {after_date} to {before_date}")
     base_url = "https://api.fitbit.com/1.2/user/-/sleep/list.json"
     params = {
         "sort": sort,
@@ -38,8 +39,10 @@ def get_sleep_log_list(after_date=None, before_date=None, sort="asc", limit=100,
 
 def check_for_sleep(date=None):
     """指定日の睡眠ログをチェックし、睡眠の開始・終了をアラート表示およびDiscord通知"""
-    res = get_sleep_log_list(after_date=(datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'), before_date=date)
+    print(f"Checking for sleep on {date}")
+    res = get_sleep_log_list(after_date=date, before_date=(datetime.strptime(date, "%Y-%m-%d") + timedelta(days=-1)).strftime("%Y-%m-%d"))
     data = res.json()
+    print(data)
     new_logs = []
     if data.get("sleep"):
         for sleep_log in data["sleep"]:
