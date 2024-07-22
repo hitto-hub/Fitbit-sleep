@@ -51,7 +51,8 @@ check_for_sleep 関数で、指定日の睡眠ログをチェックし、睡眠�
 while True ループで、毎分指定日の睡眠ログをチェックし、アラートを表示します。
 このコードは、Fitbit APIを使って睡眠ログを監視し、睡眠の開始と終了をリアルタイムで検知してアラートを表示するシステムを構築します。
 
-(venv) $ tree
+```sh
+$ tree
 .
 ├── README.md
 ├── auth
@@ -66,5 +67,4 @@ while True ループで、毎分指定日の睡眠ログをチェックし、ア
 │   └── fitbit_api.py
 ├── main.py
 └── requirements.txt
-
-5 directories, 8 files
+```
