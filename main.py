@@ -9,11 +9,15 @@ def main():
     """メインループ"""
     while True:
         date = datetime.now().strftime('%Y-%m-%d')
+        print(f"{date}の睡眠ログを取得中...")
+        # 前回のログを取得
         previous_logs = get_previous_logs().splitlines()
+        # 新しい睡眠ログを取得
         new_logs = check_for_sleep(date)
+        # 差分を確認
         diff = list(difflib.unified_diff(previous_logs, new_logs, lineterm=''))
         diff = [line[1:] for line in diff if line.startswith('+') and not line.startswith('+++')]
-
+        # 差分があれば通知と保存
         if diff:
             new_diff_message = "\n".join(diff)
             print(new_diff_message)
