@@ -37,10 +37,10 @@ def get_sleep_log_list(after_date=None, before_date=None, sort="asc", limit=100,
     :return: Fitbit APIのレスポンスオブジェクト
     """
     print(f"Getting sleep logs from {after_date} to {before_date}")
-    
+
     # Fitbit APIのエンドポイントURLを設定
     base_url = "https://api.fitbit.com/1.2/user/-/sleep/list.json"
-    
+
     # クエリパラメータを設定
     params = {
         "sort": sort,    # ソート順
@@ -66,49 +66,39 @@ def get_sleep_log_list(after_date=None, before_date=None, sort="asc", limit=100,
 
     return res  # レスポンスオブジェクトを返す
 
+from datetime import datetime, timedelta
+
 def check_for_sleep(date=None):
     """
     指定された日付の睡眠ログをチェックし、睡眠の開始・終了をアラートとして生成する関数
 
-    :param date: チェックする日付（例: '2023-11-01'）。形式は 'YYYY-MM-DD'。
+    :param date: チェックする開始日時（例: '2023-11-01T20:43:47'）
     :return: 睡眠開始・終了を示す新しいログのリスト
     """
-    # 日付が指定されていない場合はエラーを防ぐために現在の日付をデフォルトに設定
     if not date:
-        date = datetime.now().strftime('%Y-%m-%d')
+        date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    
+    after_date = (datetime.strptime(date, "%Y-%m-%dT%H:%M:%S") + timedelta(days=-1)).strftime("%Y-%m-%d")
+    res = get_sleep_log_list(after_date=after_date)  # APIからログを取得
+    data = res.json()
+    
+    alerts = []
 
-    # 前日の日付を計算して`after_date`に設定
-    after_date = (datetime.strptime(date, "%Y-%m-%d") + timedelta(days=-1)).strftime("%Y-%m-%d")
-
-    # 指定された範囲の睡眠ログを取得
-    res = get_sleep_log_list(after_date=after_date)
-    data = res.json()  # APIのレスポンスをJSON形式で解析
-
-    # レスポンス内容を整形して表示
-    print("Response from check_for_sleep:")
-    print(json.dumps(data, indent=4, ensure_ascii=False))
-
-    # 新しい睡眠ログを格納するリスト
-    new_logs = []
-
-    # "sleep"データが存在するかを確認
-    if data.get("sleep"):
-        for sleep_log in data["sleep"]:  # 各睡眠ログを処理
-            previous_level = None  # 前回の睡眠レベルを初期化
-            for entry in sleep_log["levels"]["data"]:  # 各レベルのデータを処理
-                # "wake"から他のレベルへの遷移で睡眠開始を検出
+    if "sleep" in data:
+        for sleep_log in data["sleep"]:
+            previous_level = None
+            for entry in sleep_log["levels"]["data"]:
+                timestamp = datetime.strptime(entry["dateTime"], "%Y-%m-%dT%H:%M:%S.%f")
                 if previous_level == "wake" and entry["level"] in ["light", "deep", "rem"]:
-                    message = f"Alert: Sleep started at {entry['dateTime']}"
-                    new_logs.append(message)
-                # 他のレベルから"wake"への遷移で睡眠終了を検出
+                    alerts.append((timestamp, f"Alert: Sleep started at {entry['dateTime']}"))
                 elif previous_level in ["light", "deep", "rem"] and entry["level"] == "wake":
-                    message = f"Alert: Sleep ended at {entry['dateTime']}"
-                    new_logs.append(message)
-
-                # 現在のレベルを次のループのために保存
+                    alerts.append((timestamp, f"Alert: Sleep ended at {entry['dateTime']}"))
                 previous_level = entry["level"]
     else:
-        # 指定された日付に睡眠データがない場合のメッセージ
-        print(f"No sleep detected on {date}")
+        print(f"No sleep detected after {after_date}")
 
-    return new_logs  # 新しい睡眠開始・終了ログのリストを返す
+    # タイムスタンプでソート
+    alerts.sort(key=lambda x: x[0])
+    
+    # メッセージ部分だけを抽出して返す
+    return [message for _, message in alerts]

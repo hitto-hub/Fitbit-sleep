@@ -4,3 +4,4 @@ venv
 *logs.txt
 *conf.json
 __pycache__
+last_fetch_time.txt
